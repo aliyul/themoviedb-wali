@@ -32,6 +32,10 @@
                     <a href="{{ route('movies.upcoming') }}" class="hover:text-gray-300">Movies up Coming</a>
                 </li>
 
+                <li class="md:ml-16 mt-3 md:mt-0">
+                    <a href="{{ route('localmovies.index') }}" class="hover:text-gray-300">Local Movies</a>
+                </li>
+
                 <!--<li class="md:ml-6 mt-3 md:mt-0">
                     <a href="{{ route('tv.index') }}" class="hover:text-gray-300">TV Shows</a>
                 </li>

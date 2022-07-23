@@ -9,8 +9,8 @@
                 @method('POST')
                 <div class="flex-none">
                     <input type="hidden" name="id" class="form-control" value="{{ $movie['id'] }}">
-                    <input type="hidden" name="poster_path" class="form-control"  value="{{ $movie['poster_path'] }}">
                 <img src="{{ $movie['poster_path'] }}" alt="poster" class="w-64 lg:w-96">
+                    <input type="hidden" name="poster_path" class="form-control"  value="{{ $movie['poster_path'] }}">
             </div>
             <div class="md:ml-24">
                 <h2 class="text-4xl mt-4 md:mt-0 font-semibold">{{ $movie['title'] }}</h2>
@@ -81,7 +81,7 @@
                     @endif
                         <div class="mt-4 text-center flex inline-flex items-center bg-blue-500 text-gray-900 rounded font-semibold px-5 py-4 hover:bg-orange-600 transition ease-in-out duration-150">
                             <svg class="w-6 fill-current" viewBox="0 0 100 100"></svg>
-                            <button type="submit" class="btn btn-primary">Save Movie </button>
+                            <button type="submit" class="btn btn-primary">Save Movie To Local Movie </button>
                         </div>
 
 

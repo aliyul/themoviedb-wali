@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Movies;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+
 
 use GuzzleHttp\Client;
 
@@ -17,7 +19,7 @@ use App\ViewModels\MoviesViewModel;
 use App\ViewModels\MoviesViewModelPopular;
 use Illuminate\Support\Facades\Http;
 
-class MoviesController extends Controller
+class MoviesLocalController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,81 +29,8 @@ class MoviesController extends Controller
     public function index()
     {
 
-        $nowPlayingMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/now_playing')
-            ->json()['results'];
-
-       /* $popularMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/popular')
-            ->json()['results'];
-
-        $topratedMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/top_rated')
-            ->json()['results'];
-
-        $upcomingMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/upcoming')
-            ->json()['results'];
-
-
-        $genres = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/genre/movie/list')
-            ->json()['genres'];
-        */
-        $viewModel = new MoviesViewModel(
-            $nowPlayingMovies
-            /*$popularMovies,
-            $topratedMovies,
-            $upcomingMovies,
-            $genres*/
-        );
-
-        return view('movies.index', $viewModel);
-    }
-
-
-    public function popular()
-    {
-
-        $popularMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/popular')
-            ->json()['results'];
-
-
-        $viewModel = new MoviesViewModelPopular(
-            $popularMovies
-        );
-
-        return view('movies.popular', $viewModel);
-    }
-
-    public function toprated()
-    {
-
-        $topratedMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/top_rated')
-            ->json()['results'];
-
-        $viewModel = new MoviesViewModelTopRated(
-            $topratedMovies
-        );
-
-        return view('movies.toprated', $viewModel);
-    }
-
-    public function upcoming()
-    {
-
-        $upcomingMovies = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/upcoming')
-            ->json()['results'];
-
-
-        $viewModel = new MoviesViewModelUpComing(
-            $upcomingMovies
-        );
-
-        return view('movies.upcoming', $viewModel);
+        $movies = Movies::paginate(10);
+        return view('localmovies.index', [ 'localmovies' => $movies]);
     }
 
     /**
@@ -167,7 +96,7 @@ class MoviesController extends Controller
 
         $movie->imdb_id       = $imdb_id;
         $movie->title       = $title;
-        $movie->poster_path  = $poster_path;
+        $movie->poster_path          = $poster_path;
         $movie->vote_average  = $vote_average;
         $movie->release_date         = $release_date;
         $movie->genres      = $genres;
@@ -210,13 +139,8 @@ class MoviesController extends Controller
      */
     public function show($id)
     {
-        $movie = Http::withToken(config('services.tmdb.token'))
-            ->get('https://api.themoviedb.org/3/movie/'.$id.'?append_to_response=credits,videos,images')
-            ->json();
-
-        $viewModel = new MovieViewModel($movie);
-
-        return view('movies.show', $viewModel);
+        $movie  = Movies::find($id);
+        return view('localmovies.show', ['localmovies' => $movie ]);
     }
 
     /**
@@ -228,6 +152,15 @@ class MoviesController extends Controller
     public function edit($id)
     {
         //
+        $movie    = Movies::find($id);
+        //$casts    = User::whereIn('role_id', array('2','3'))->get();
+        //$crews    = User::whereIn('role_id', array('7'))->get();
+        //$genres   = Genre::all();
+        //$ratings  = Ratings::all();
+
+       // $viewMovie = new Movies;
+        //return view('localmovies.edit', [ 'movie' => $movie , 'casts' => $casts, 'genres'=>$genres,'ratings'=>$ratings,'crews'=>$crews ]);
+        return view('localmovies.edit', [ 'localmovies' => $movie]);
     }
 
 
@@ -241,32 +174,77 @@ class MoviesController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $request->validate([
-            'imdb_id' => 'required',
-            'title' => 'required',
-            'poster_path' => 'required',
-            'vote_average' => 'required',
-            'release_date' => 'required',
-            'genres' => 'required',
-            'overview' => 'required'
-        ]);
 
-        //$client = new \GuzzleHttp\Client();
-        $client = new Client();
-        $response = $client->request('PUT', 'http://server.larav.student:8001/api/students/'. $id, [
-            'form_params' => [
-                'imdb_id' => $request->imdb_id,
-                'title' => $request->title,
-                'poster_path' => $request->poster_path,
-                'vote_average' => $request->vote_average,
-                'release_date' => $request->release_date,
-                'genres' => $request->genres,
-                'overview' => $request->overview,
-            ]
-        ]);
-        //return view('movies.index', $viewModel);
-        return redirect()->route('movies.index')
-            ->with('success', 'Movie Add/Update successfully.');
+        $movie         = Movies::find($id);
+       // $imdb_id    = Movies::firstOrNew(['imdb_id' => $movie->imdb_id]);
+        $imdb_id    = $movie->imdb_id;
+        $title          = $request->title;
+        $poster_path  = $request->poster_path;
+        $vote_average         = $request->vote_average;
+        $release_date      = $request->release_date;
+        $genres     = $request->genres;
+        $overview          = $request->overview;
+
+        if($imdb_id)
+            $movie->imdb_id       = $imdb_id;
+
+        if($poster_path)
+            $movie->poster_path         = $poster_path;
+
+        $movie->genres      = $genres;
+        $movie->title     = $title;
+
+        if($vote_average)
+            $movie->vote_average       = $vote_average;
+
+        if($release_date)
+            $movie->release_date          = $release_date;
+
+        if($overview)
+            $movie->overview       = $overview;
+
+        $movie->save();
+/*
+        $crews  =  explode(",",$request->crew_value);
+        $casts  =  explode(",",$request->cast_value);
+
+        if(count($crews)>0 && count($casts)>0 )
+        {
+            $cast_crews::where('movie_id',$movie->id)->delete();
+        }
+
+        if(isset($crews) && count($crews)>1)
+        {
+            foreach($crews as $crew)
+            {
+                $cast_crews->user_id = $crew;
+                $cast_crews->movie_id = $movie->id;
+                $cast_crews->insert([
+                    'user_id' => $crew,
+                    'movie_id' => $movie->id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ]);
+            }
+        }
+
+        if(count($casts)>0 && count($casts)>1)
+        {
+            foreach($casts as $cast)
+            {
+                $cast_crews->user_id  = $cast;
+                $cast_crews->movie_id = $movie->id;
+                $cast_crews->insert([
+                    'user_id' => $cast,
+                    'movie_id' => $movie->id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ]);
+            }
+        }
+*/
+
+        return Redirect::to('localmovies')->with('message', 'Local Movie updated!');
     }
 
     /**
@@ -278,5 +256,7 @@ class MoviesController extends Controller
     public function destroy($id)
     {
         //
+        Movies::find($id)->delete();
+        return Redirect::to('localmovies')->with('message', 'Local Movie deleted!');
     }
 }
