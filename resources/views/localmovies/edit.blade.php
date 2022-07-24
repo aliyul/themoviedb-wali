@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-    <form class="card" role="form" method="POST" action="{{ route('localmovies.update',$localmovies->imdb_id) }}">
+    <form class="card" role="form" method="POST" action="{{ route('localmovies.update',$localmovies->id) }}">
         <input type="hidden" name="_method" value="PUT">
         <!--<input type="hidden"  id="crew_value" name="crew_value" value="">
         <input type="hidden"  id="cast_value"  name="cast_value"  value="">-->
@@ -75,7 +75,7 @@
         
         <div class="card-footer text-right">
                 <div class="d-flex">
-                  <a href="{{ route('movies.index') }}" class="btn btn-link">Cancel</a>
+                  <a href="{{ route('localmovies.index') }}" class="btn btn-link">Cancel</a>
                   <button type="submit" class="btn btn-primary ml-auto">Update</button>
                 </div>
         </div>
