@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', 'MoviesLocalController@index')->name('localmovies.index');
 Route::resource('localmovies', 'MoviesLocalController');
 
 Route::get('localmovies/destroy/{id}', 'MoviesLocalController@destroy')->name('localmovies.destroy');
 
 Route::resource('movies', 'MoviesController');
 
-Route::get('/', 'MoviesController@index')->name('movies.index');
+Route::get('/movies', 'MoviesController@index')->name('movies.index');
 //Route::get('/movies/store', 'MoviesController@index')->name('movies.store');
 
 Route::get('/popular', 'MoviesController@popular')->name('movies.popular');

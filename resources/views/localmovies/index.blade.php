@@ -13,8 +13,20 @@
     <div class="row justify-content-center">
         
 
-        <h1 class="page-title"> Movies </h1>
-      
+        <h1 class="page-title"> Movies CRUD </h1>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    {{ $localmovies->links() }}
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex">
+                        <a class="btn btn-primary ml-auto" href="{{ route('movies.index')}}">Add new Movie API</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-12">
            
             <div class="table">
@@ -55,22 +67,6 @@
                         </tr>
                     @endforeach
                 </table>
-                
-              
-
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {{ $localmovies->links() }}
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex">
-                                    <a class="btn btn-primary ml-auto" href="{{ route('movies.index')}}">Add new Movie API</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 
             </div>
         </div>
